@@ -4,8 +4,11 @@ ENV port=3000
 
 WORKDIR /app
 
+COPY ./package*.json /app
+
+RUN npm install --silent
+
 COPY . /app
-RUN npm install
 
 EXPOSE ${PORT}
 
