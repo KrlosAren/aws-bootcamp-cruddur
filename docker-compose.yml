@@ -4,8 +4,8 @@ services:
 
   backend:
     build:
-      context: ./backend-flask
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./backend-flask/Dockerfile
     container_name: backend_flask
     image: backend_flask
     volumes:
@@ -13,14 +13,14 @@ services:
     ports:
       - "4500:5000"
     environment:
-      - FRONTEND_URL="https://3000-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}"
-      - BACKEND_URL="https://4500-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}"
+      FRONTEND_URL : "https://3000-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}"
+      BACKEND_URL : "https://4500-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}"
       
 
   frontend:
     build:
-     context: ./frontend-react-js
-     dockerfile: Dockerfile
+     context: .
+     dockerfile: ./frontend-react-js/Dockerfile
     container_name: frontend_react
     image: frontend_react
     volumes:
@@ -28,4 +28,9 @@ services:
     ports:
       - "3000:3000"
     environment:
-      REACT_APP_BACKEND_URL: "https://4500-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}"
+      REACT_APP_BACKEND_URL : "https://4500-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}"
+
+networks: 
+  internal-network:
+    driver: bridge
+    name: cruddur

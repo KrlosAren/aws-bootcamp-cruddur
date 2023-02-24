@@ -4,12 +4,14 @@ ENV port=3000
 
 WORKDIR /app
 
-COPY ./package*.json /app
+ENV PATH /app/node_modules/.bin:$PATH
 
-RUN npm install --silent
+COPY ./frontend-react-js/package*.json /app
 
-COPY . /app
+RUN npm install
+
+COPY ./frontend-react-js /app
 
 EXPOSE ${PORT}
 
-CMD ["npm","start"]
+CMD ["npm","run","start"]
