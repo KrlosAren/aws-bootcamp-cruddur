@@ -16,6 +16,14 @@ tasks:
       sudo apt update
       sudo apt install -y postgresql-client-13 libpq-dev
   
+ports:
+  - name: psql-databse
+    port: 5432
+    visibility: public
+  - name: app
+    port : 3000
+    visibility: public
+
 vscode:
   extensions:
     - 42Crunch.vscode-openapi
