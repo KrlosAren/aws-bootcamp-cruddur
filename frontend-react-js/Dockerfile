@@ -6,11 +6,11 @@ WORKDIR /app
 
 ENV PATH /app/node_modules/.bin:$PATH
 
-COPY ./frontend-react-js/package*.json /app
+COPY ./package*.json /app
 
 RUN npm install
 
-COPY ./frontend-react-js /app
+COPY . /app
 
 EXPOSE ${PORT}
 
