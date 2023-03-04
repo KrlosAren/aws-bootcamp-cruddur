@@ -4,8 +4,8 @@ services:
 
   backend:
     build:
-      context: ./backend-flask
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./backend-flask/Dockerfile
     container_name: backend_flask
     image: backend_flask
     volumes:
@@ -21,8 +21,8 @@ services:
 
   frontend:
     build:
-     context: ./frontend-react-js
-     dockerfile: Dockerfile
+     context: .
+     dockerfile: ./frontend-react-js/Dockerfile
     container_name: frontend_react
     image: frontend_react
     volumes:
