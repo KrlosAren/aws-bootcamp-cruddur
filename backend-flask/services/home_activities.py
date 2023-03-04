@@ -1,12 +1,13 @@
 from datetime import datetime, timedelta, timezone
 from opentelemetry import trace
 
-
+import logging
 
 tracer = trace.get_tracer('home.activities')
 
 class HomeActivities:
-  def run():
+  def run(logger):
+    logger.info('HomeActivities')
     with tracer.start_as_current_span('http-handler'):
       span = trace.get_current_span()
 
