@@ -15,7 +15,9 @@ services:
     environment:
       FRONTEND_URL : "https://3000-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}"
       BACKEND_URL : "https://4500-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}"
-      
+      OTEL_SERVICE_NAME: 'backend-flask'
+      OTEL_EXPORTER_OTLP_ENDPOINT: "https://api.honeycomb.io"
+      OTEL_EXPORTER_OTLP_HEADERS: "x-honeycomb-team=${HONEYCOMB_API_KEY}"
 
   frontend:
     build:
@@ -30,16 +32,16 @@ services:
     environment:
       REACT_APP_BACKEND_URL : "https://4500-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}"
 
-  dynamodb-local:
-    user: root
-    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
-    image: "amazon/dynamodb-local"
-    container_name: dynamodb-local
-    ports:
-     - "8000:8000"
-    volumes:
-       -  ./docker/dynamodb:/home/dynamodblocal/data
-    working_dir: /home/dynamodblocal
+  # dynamodb-local:
+  #   user: root
+  #   command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
+  #   image: "amazon/dynamodb-local"
+  #   container_name: dynamodb-local
+  #   ports:
+  #    - "8000:8000"
+  #   volumes:
+  #      -  ./docker/dynamodb:/home/dynamodblocal/data
+  #   working_dir: /home/dynamodblocal
   
   db:
     image: postgres:13-alpine
