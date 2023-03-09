@@ -4,8 +4,8 @@ services:
 
   backend:
     build:
-      context: ./backend-flask
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./backend-flask/Dockerfile
     container_name: backend_flask
     image: backend_flask
     volumes:
@@ -15,12 +15,20 @@ services:
     environment:
       FRONTEND_URL : "https://3000-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}"
       BACKEND_URL : "https://4500-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}"
-      
+      OTEL_SERVICE_NAME: 'backend-flask'
+      OTEL_EXPORTER_OTLP_ENDPOINT: "https://api.honeycomb.io"
+      OTEL_EXPORTER_OTLP_HEADERS: "x-honeycomb-team=${HONEYCOMB_API_KEY}"
+      AWS_XRAY_URL: "*4500-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}*"
+      AWS_XRAY_DAEMON_ADDRESS: "xray-daemon:2000"
+      AWS_ACCESS_KEY_ID : "${AWS_ACCESS_KEY_ID}"
+      AWS_SECRET_ACCESS_KEY : "${AWS_SECRET_ACCESS_KEY}"
+      AWS_DEFAULT_REGION : "${AWS_DEFAULT_REGION}"
+      ROLLBAR_API_KEY: "${ROLLBAR_API_KEY}"
 
   frontend:
     build:
-     context: ./frontend-react-js
-     dockerfile: Dockerfile
+     context: .
+     dockerfile: ./frontend-react-js/Dockerfile
     container_name: frontend_react
     image: frontend_react
     volumes:
@@ -51,6 +59,17 @@ services:
       - '5432:5432'
     volumes:
       - db:/var/lib/postgresql/data
+  
+  xray-daemon:
+    image: "amazon/aws-xray-daemon"
+    environment:
+      AWS_ACCESS_KEY_ID : "${AWS_ACCESS_KEY_ID}"
+      AWS_SECRET_ACCESS_KEY : "${AWS_SECRET_ACCESS_KEY}"
+      AWS_REGION : "us-west-2"
+    command:
+      - "xray -o -b xray-daemon:2000"
+    ports:
+      - "2000:2000/udp"
 
 volumes:
   db:
