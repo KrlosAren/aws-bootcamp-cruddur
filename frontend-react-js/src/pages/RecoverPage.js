@@ -2,6 +2,8 @@ import './RecoverPage.css';
 import React from "react";
 import {ReactComponent as Logo} from '../components/svg/logo.svg';
 import { Link } from "react-router-dom";
+import { Auth } from 'aws-amplify';
+
 
 export default function RecoverPage() {
   // Username is Eamil
@@ -9,19 +11,31 @@ export default function RecoverPage() {
   const [password, setPassword] = React.useState('');
   const [passwordAgain, setPasswordAgain] = React.useState('');
   const [code, setCode] = React.useState('');
-  const [errors, setErrors] = React.useState('');
+  const [cognitoErrors, setCognitoErrors] = React.useState('');
   const [formState, setFormState] = React.useState('send_code');
 
   const onsubmit_send_code = async (event) => {
     event.preventDefault();
-    console.log('onsubmit_send_code')
+    setCognitoErrors('')
+    Auth.forgotPassword(username)
+    .then((data) => setFormState('confirm_code') )
+    .catch((err) => setCognitoErrors(err.message) );
     return false
   }
-  const onsubmit_confirm_code = async (event) => {
-    event.preventDefault();
-    console.log('onsubmit_confirm_code')
-    return false
+
+
+const onsubmit_confirm_code = async (event) => {
+  event.preventDefault();
+  setCognitoErrors('')
+  if (password == passwordAgain){
+    Auth.forgotPasswordSubmit(username, code, password)
+    .then((data) => setFormState('success'))
+    .catch((err) => setCognitoErrors(err.message) );
+  } else {
+    setCognitoErrors('Passwords do not match')
   }
+  return false
+}
 
   const username_onchange = (event) => {
     setUsername(event.target.value);
@@ -36,9 +50,9 @@ export default function RecoverPage() {
     setCode(event.target.value);
   }
 
-  let el_errors;
-  if (errors){
-    el_errors = <div className='errors'>{errors}</div>;
+  let errors;
+  if (cognitoErrors){
+    errors = <div className='errors'>{errors}</div>;
   }
 
   const send_code = () => {
@@ -57,7 +71,7 @@ export default function RecoverPage() {
           />
         </div>
       </div>
-      {el_errors}
+      {errors}
       <div className='submit'>
         <button type='submit'>Send Recovery Code</button>
       </div>
