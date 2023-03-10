@@ -18,7 +18,7 @@ I created my account using the AWS console and attached AdministratorAccess to m
 
 ## Generate AWS Credentials
 
-![CLI credentials](../_docs/assets/AWSCLIcredent.jpg)
+![CLI credentials Img](../_docs/assets/AWSCLIcredent.jpg)
 
 I had configured credentials in my computer, but with the command aws sts get-caller-identity I get my local configuration
 
