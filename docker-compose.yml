@@ -38,9 +38,9 @@ services:
     environment:
       REACT_APP_BACKEND_URL : "https://4500-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}"
       REACT_AWS_PROJECT_REGION : "${AWS_DEFAULT_REGION}"
-      REACT_APP_AWS_COGNITO_IDENTITY_POOL_ID : "${AWS_COGNITO_POOL_ID}"
-      REACT_APP_AWS_USER_POOLS_ID : "${AWS_COGNITO_POOL_ID}"
-      REACT_APP_CLIENT_ID : "3lsi7avsshkqjtmce9n5p4qt4"
+      REACT_APP_AWS_COGNITO_IDENTITY_POOL_ID : "${REACT_APP_AWS_COGNITO_IDENTITY_POOL_ID}"
+      REACT_APP_AWS_USER_POOLS_ID : "${REACT_AWS_COGNITO_POOL_ID}"
+      REACT_APP_CLIENT_ID : "${REACT_APP_CLIENT_ID}"
 
   dynamodb-local:
     user: root
@@ -50,7 +50,7 @@ services:
     ports:
      - "8000:8000"
     volumes:
-       -  ./docker/dynamodb:/home/dynamodblocal/data
+       -  ./dynamodb:/home/dynamodblocal/data
     working_dir: /home/dynamodblocal
   
   db:
