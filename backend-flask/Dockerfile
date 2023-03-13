@@ -7,7 +7,7 @@ COPY ./backend-flask/requirements.txt requirements.txt
 
 RUN pip3 install -r requirements.txt
 
-ENV FLASK_ENV='production'
+ENV FLASK_ENV='development'
 
 EXPOSE ${PORT}
 

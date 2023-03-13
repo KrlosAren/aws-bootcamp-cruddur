@@ -10,3 +10,4 @@ watchtower
 
 blinker
 rollbar
+python-jose

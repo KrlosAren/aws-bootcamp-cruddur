@@ -5,6 +5,7 @@ from flask_cors import CORS, cross_origin
 import os
 import sys
 
+
 from services.home_activities import *
 from services.notifications_activities import *
 from services.user_activities import *
@@ -16,6 +17,7 @@ from services.messages import *
 from services.create_message import *
 from services.show_activity import *
 
+from lib.cognito_jwt_token import CognitoJWTToken
 
 # ## Honeycomb
 # from opentelemetry import trace
@@ -66,6 +68,13 @@ from services.show_activity import *
 
 app = Flask(__name__)
 
+
+cognito_jwt_token = CognitoJWTToken(
+    user_pool_id = os.getenv('AWS_COGNITO_USER_POOL_ID'),
+    user_pool_client_id = os.getenv('AWS_COGNITO_USER_POOL_CLIENT_ID'),
+    region = os.getenv('AWS_DEFAULT_REGION'),
+  )
+
 # FlaskInstrumentor().instrument_app(app)
 # RequestsInstrumentor().instrument()
 
@@ -81,6 +90,7 @@ origins = [frontend, backend]
 #   allow_headers="content-type,if-modified-since",
 #   methods="OPTIONS,GET,HEAD,POST"
 # )
+
 
 cors = CORS(
   app, 
@@ -158,9 +168,18 @@ def data_create_message():
 
 @app.route("/api/activities/home", methods=['GET'])
 def data_home():
-  data = HomeActivities.run()
-  print(request.headers.get('Authorization'),file=sys.stdout)
+
+  try:
+    access_token = cognito_jwt_token.extract_access_token(request.headers)
+    claims =  cognito_jwt_token.verify(token=access_token)
+    data = HomeActivities.run(auth=True)
+  except Exception as error:
+    app.logger.error(error)
+    data = HomeActivities.run(auth=False)
+  
   return data, 200
+  
+# return None,400
 
 @app.route("/api/activities/notifications",methods=["GET"])
 @cross_origin()

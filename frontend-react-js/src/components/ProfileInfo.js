@@ -17,6 +17,7 @@ export default function ProfileInfo(props) {
   const signOut = async () => {
     try {
         await Auth.signOut({ global: true });
+        window.localStorage.clear()
         window.location.href = "/"
     } catch (error) {
         console.log('error signing out: ', error);
