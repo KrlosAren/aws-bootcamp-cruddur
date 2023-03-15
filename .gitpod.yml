@@ -25,7 +25,7 @@ ports:
   - name: psql-databse
     port: 5432
     visibility: public
-  - name: fronted
+  - name: frontend
     port : 3000
     visibility: public
   - name: backend
