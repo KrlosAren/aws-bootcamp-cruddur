@@ -1,0 +1,5 @@
+#! /usr/bin/bash
+
+echo "Delete cruddur database"
+psql $CONNECTION_URL -c "DROP DATABASE cruddur;"
+echo "cruddur delete..."
