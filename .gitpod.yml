@@ -25,8 +25,11 @@ ports:
   - name: psql-databse
     port: 5432
     visibility: public
-  - name: app
+  - name: frontend
     port : 3000
+    visibility: public
+  - name: backend
+    port : 4500
     visibility: public
 
 vscode:
