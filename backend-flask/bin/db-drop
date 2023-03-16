@@ -1,5 +1,7 @@
 #! /usr/bin/bash
 
 echo "Delete cruddur database"
-psql $CONNECTION_URL -c "DROP DATABASE cruddur;"
+NO_DB_CONNECTION=$(sed 's/\/cruddur//g' <<< "$CONNECTION_URL")
+echo "DELETING ${NO_DB_CONNECTION}"
+psql $NO_DB_CONNECTION -c "DROP DATABASE cruddur;"
 echo "cruddur delete..."

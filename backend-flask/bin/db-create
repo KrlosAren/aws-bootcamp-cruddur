@@ -1,5 +1,6 @@
 #! /usr/bin/bash
 
 echo "Create cruddur database..."
-psql $CONNECTION_URL -c "CREATE DATABASE IF NOT EXISTS cruddur;"
+NO_DB_CONNECTION=$(sed 's/\/cruddur//g' <<< "$CONNECTION_URL")
+psql $NO_DB_CONNECTION -c "CREATE DATABASE cruddur;"
 echo "cruddur create..."
