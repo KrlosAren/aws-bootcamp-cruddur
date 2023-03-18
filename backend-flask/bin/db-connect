@@ -7,4 +7,13 @@ printf "${CYAN}== ${LABEL}${NO_COLOR}\n"
 
 echo "Connect to DB"
 
-psql $CONNECTION_URL
+if [ "$1" = "prod" ]; then
+    echo "Creating schema for prod"
+    URL=$PROD_CON_URL
+else
+    echo "Create schema for ${1}"
+    URL=$CONNECTION_URL
+fi
+
+echo "URL CONNECTION ${URL}"
+psql $URL

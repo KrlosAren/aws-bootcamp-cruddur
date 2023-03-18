@@ -17,6 +17,7 @@ else
 fi
 
 
+echo $URL
 psql $URL crudur < $schema_path
 
 echo "cruddur create schemas tables..."

@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 # import logging
 
 # tracer = trace.get_tracer('home.activities')
-from lib.db import pool, query_wrap_object, query_wrap_array
+from lib.db import db
 
 class HomeActivities:
   def run(auth):
@@ -31,12 +31,9 @@ class HomeActivities:
       LEFT JOIN public.users ON users.uuid = activities.user_uuid
       ORDER BY activities.created_at DESC
       """)
-    with pool.connection() as conn:
-      with conn.cursor() as cur:
-        cur.execute(sql)
-        json = cur.fetchone()
-    
-    return json[0]
+
+    result = db.query_object(sql=sql)
+    return result
     # span.set_attribute("app.time", now.isoformat())
 
     return results
