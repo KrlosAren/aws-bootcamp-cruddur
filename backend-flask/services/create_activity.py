@@ -5,9 +5,6 @@ from lib.db import db
 
 class CreateActivity:
 
-  def validation():
-    pass
-
   def run(message, user_handle, ttl):
     model = {
       'errors': None,
@@ -50,7 +47,7 @@ class CreateActivity:
     else:
       expires_at = (now + ttl_offset).isoformat()
       create_activity(user_uuid=user_handle,message=message,expires_at=expires_at)
-      
+      import pdb;pdb.set_trace()
       model['data'] = {
         'uuid': uuid.uuid4(),
         'display_name': 'Andrew Brown',
@@ -69,10 +66,12 @@ def create_activity(user_uuid,message, expires_at):
       expires_at
       ) 
     VALUES (
-      "{user_uuid}",
-      "{message}",
-      "{expires_at}"
-    
-    )
-  """
-  db.query_commit(sql=sql)
+      %s,
+      %s,
+      %s
+    ) RETURNING id
+  """.format()
+
+  uuid = db.query_commit_return_id(sql,user_uuid,message,expires_at)
+
+

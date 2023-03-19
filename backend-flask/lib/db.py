@@ -28,9 +28,10 @@ class Db:
 
   def query_wrap_array(self,template):
     sql = f"""
-    (SELECT COALESCE(array_to_json(array_agg(row_to_json(array_row))),'[]'::json) FROM (
-    {template}
-    ) array_row);
+      (
+        SELECT COALESCE(array_to_json(array_agg(row_to_json(array_row))),'[]'::json) 
+        FROM ({template}) array_row
+      );
     """
     return sql
 
@@ -52,7 +53,22 @@ class Db:
       
         return json[0]
 
-  def query_commit(self,sql):
+  def query_commit_return_id(self, sqlm,*args):
+    print('-SQL STATEMENT')
+
+    try:
+      conn = self.pool.connection()
+      cur = conn.cursor()
+      cur.execute(sql)
+      returning_id = cur.fetchone()[0]
+      conn.commit(sql,*args)
+      conn.close()
+      return returning_id
+    
+    except Exception as error:
+      self.print_psycopg_err(err)
+
+  def query_commit(self,sql,*args):
     try:
       with self.pool.connection() as conn:
         with conn.cursor() as cur:

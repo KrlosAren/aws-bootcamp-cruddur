@@ -7,7 +7,7 @@ from datetime import datetime, timedelta, timezone
 from lib.db import db
 
 class HomeActivities:
-  def run(auth):
+  def run(cognito_user_id = None ):
     # logger.info('HomeActivities')
     # with tracer.start_as_current_span('http-handler'):
     #   span = trace.get_current_span()
@@ -15,7 +15,8 @@ class HomeActivities:
 
     if not auth :
       return []
-    sql = query_wrap_array("""
+      
+    result = db.query_array("""
       SELECT
         activities.uuid,
         users.display_name,
@@ -32,8 +33,5 @@ class HomeActivities:
       ORDER BY activities.created_at DESC
       """)
 
-    result = db.query_object(sql=sql)
     return result
     # span.set_attribute("app.time", now.isoformat())
-
-    return results
