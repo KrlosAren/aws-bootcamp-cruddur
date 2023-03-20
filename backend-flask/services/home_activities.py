@@ -8,15 +8,16 @@ from lib.db import db
 
 class HomeActivities:
   def run(cognito_user_id = None ):
+    model = {
+      'error': None,
+      'data': None
+    }
     # logger.info('HomeActivities')
     # with tracer.start_as_current_span('http-handler'):
     #   span = trace.get_current_span()
     now = datetime.now(timezone.utc).astimezone()
 
-    if not cognito_user_id :
-      return []
-    
-    sql = """
+    sql = f"""
       SELECT
         activities.uuid,
         users.display_name,
@@ -30,11 +31,13 @@ class HomeActivities:
         activities.created_at
       FROM public.activities
       LEFT JOIN public.users ON users.uuid = activities.user_uuid
-      where public.users.uuid  = %s
+      where public.users.uuid  = %(uuid)s
       ORDER BY activities.created_at DESC
       """
 
     result = db.query_array(sql,uuid=cognito_user_id)
 
-    return result
+    model['data'] = result
+
+    return  model
     # span.set_attribute("app.time", now.isoformat())

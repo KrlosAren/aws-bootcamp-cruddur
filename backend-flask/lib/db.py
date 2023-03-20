@@ -3,6 +3,11 @@ import os
 import sys
 import re
 
+import logging
+
+logging.basicConfig(level=logging.INFO,format='%(levelname)s:%(message)s',)
+logger = logging.getLogger(__name__)
+
 class Db:
   def __init__(self):
     self.init_pool()
@@ -38,14 +43,15 @@ class Db:
 
   def query_array(self,sql,*args, **kwargs):
     wrapped_sql = self.query_wrap_array(sql)
-    with self.pool.connection() as conn:
-      with conn.cursor() as cur:
-        import pdb;pdb.set_trace()
-        cur.execute(wrapped_sql,kwargs)
-        import pdb;pdb.set_trace()
-        json = cur.fetchone()
-      
-        return json[0]
+    try:
+      with self.pool.connection() as conn:
+        with conn.cursor() as cur:
+          cur.execute(wrapped_sql,kwargs)
+          json = cur.fetchone()
+          return json[0]
+    except Exception as error:
+      self.print_psycopg_err(error)
+      return []
 
   def query_object(self,sql):
     wrapped_sql = self.query_wrap_object(sql)

@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask,jsonify
 from flask import request
 import logging
 from flask_cors import CORS, cross_origin
@@ -168,18 +168,17 @@ def data_create_message():
 
 @app.route("/api/activities/home", methods=['GET'])
 def data_home():
-
   try:
     access_token = cognito_jwt_token.extract_access_token(request.headers)
     claims =  cognito_jwt_token.verify(token=access_token)
-    data = HomeActivities.run(cognito_user_id = claims['sub'])
+    model = HomeActivities.run(cognito_user_id = claims['sub'])
+
   except Exception as error:
-    app.logger.error(error)
-    data = HomeActivities.run()
+    logger.error(error)
+    model = HomeActivities.run()
   
-  return data, 200
+  return model['data'], 200
   
-# return None,400
 
 @app.route("/api/activities/notifications",methods=["GET"])
 @cross_origin()
