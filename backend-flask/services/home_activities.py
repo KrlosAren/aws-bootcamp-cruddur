@@ -13,7 +13,7 @@ class HomeActivities:
     #   span = trace.get_current_span()
     now = datetime.now(timezone.utc).astimezone()
 
-    if not auth :
+    if not cognito_user_id :
       return []
       
     result = db.query_array("""

@@ -172,10 +172,10 @@ def data_home():
   try:
     access_token = cognito_jwt_token.extract_access_token(request.headers)
     claims =  cognito_jwt_token.verify(token=access_token)
-    data = HomeActivities.run(auth=True)
+    data = HomeActivities.run()
   except Exception as error:
     app.logger.error(error)
-    data = HomeActivities.run(auth=False)
+    data = HomeActivities.run()
   
   return data, 200
   
