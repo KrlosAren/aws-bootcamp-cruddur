@@ -46,8 +46,7 @@ class CreateActivity:
       }   
     else:
       expires_at = (now + ttl_offset).isoformat()
-      create_activity(user_uuid=user_handle,message=message,expires_at=expires_at)
-      import pdb;pdb.set_trace()
+      create_activity(handle_user=user_handle,message=message,expires_at=expires_at)
       model['data'] = {
         'uuid': uuid.uuid4(),
         'display_name': 'Andrew Brown',
@@ -58,20 +57,13 @@ class CreateActivity:
       }
     return model
 
-def create_activity(user_uuid,message, expires_at):
+def create_activity(handle_user,message, expires_at):
   sql = f"""
-    INSERT INTO public.activities (
-      user_uuid,
-      message,
-      expires_at
-      ) 
+    INSERT INTO public.activities (user_uuid,message,expires_at) 
     VALUES (
-      %s,
-      %s,
-      %s
-    ) RETURNING id
-  """.format()
+      (SELECT uuid FROM public.users WHERE users.handle = %(handle_user)s LIMIT 1) ,%(message)s,%(expires_at)s) RETURNING uuid
+  """
 
-  uuid = db.query_commit_return_id(sql,user_uuid,message,expires_at)
+  uuid = db.query_commit_return_id(sql=sql,handle_user=handle_user,message=message,expires_at=expires_at)
 
 

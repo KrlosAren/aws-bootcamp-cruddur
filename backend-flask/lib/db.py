@@ -53,20 +53,19 @@ class Db:
       
         return json[0]
 
-  def query_commit_return_id(self, sqlm,*args):
+  def query_commit_return_id(self, sql,*args,**kwargs):
     print('-SQL STATEMENT')
-
     try:
-      conn = self.pool.connection()
-      cur = conn.cursor()
-      cur.execute(sql)
-      returning_id = cur.fetchone()[0]
-      conn.commit(sql,*args)
-      conn.close()
-      return returning_id
-    
+      with self.pool.connection() as conn:
+        with conn.cursor() as cur:
+          import pdb;pdb.set_trace()
+          cur.execute(sql, kwargs)
+          returning_id = cur.fetchone()[0]
+          conn.commit(sql)
+
     except Exception as error:
-      self.print_psycopg_err(err)
+      self.print_psycopg_err(error)
+
 
   def query_commit(self,sql,*args):
     try:

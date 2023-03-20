@@ -209,6 +209,7 @@ def data_search():
 @app.route("/api/activities", methods=['POST','OPTIONS'])
 @cross_origin()
 def data_activities():
+  import pdb;pdb.set_trace()
   user_handle  = 'andrewbrown'
   message = request.json['message']
   ttl = request.json['ttl']
