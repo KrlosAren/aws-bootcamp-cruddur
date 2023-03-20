@@ -15,8 +15,8 @@ class HomeActivities:
 
     if not cognito_user_id :
       return []
-      
-    result = db.query_array("""
+    
+    sql = """
       SELECT
         activities.uuid,
         users.display_name,
@@ -30,8 +30,11 @@ class HomeActivities:
         activities.created_at
       FROM public.activities
       LEFT JOIN public.users ON users.uuid = activities.user_uuid
+      where public.users.uuid  = %s
       ORDER BY activities.created_at DESC
-      """)
+      """
+
+    result = db.query_array(sql,uuid=cognito_user_id)
 
     return result
     # span.set_attribute("app.time", now.isoformat())

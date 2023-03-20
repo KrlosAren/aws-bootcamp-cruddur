@@ -1,6 +1,7 @@
 from psycopg_pool import ConnectionPool
 import os
 import sys
+import re
 
 class Db:
   def __init__(self):
@@ -35,11 +36,13 @@ class Db:
     """
     return sql
 
-  def query_array(self,sql):
+  def query_array(self,sql,*args, **kwargs):
     wrapped_sql = self.query_wrap_array(sql)
     with self.pool.connection() as conn:
       with conn.cursor() as cur:
-        cur.execute(wrapped_sql)
+        import pdb;pdb.set_trace()
+        cur.execute(wrapped_sql,kwargs)
+        import pdb;pdb.set_trace()
         json = cur.fetchone()
       
         return json[0]
@@ -55,13 +58,21 @@ class Db:
 
   def query_commit_return_id(self, sql,*args,**kwargs):
     print('-SQL STATEMENT')
+
+    pattern = r'\bRETURNING\b'
+    match = bool(re.search(pattern, sql))
+    returning_id = None
+
     try:
       with self.pool.connection() as conn:
         with conn.cursor() as cur:
-          import pdb;pdb.set_trace()
           cur.execute(sql, kwargs)
-          returning_id = cur.fetchone()[0]
-          conn.commit(sql)
+
+          if match:
+            returning_id = cur.fetchone()[0]
+          
+          conn.commit()
+          return returning_id
 
     except Exception as error:
       self.print_psycopg_err(error)
