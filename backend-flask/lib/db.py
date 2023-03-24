@@ -53,11 +53,12 @@ class Db:
       self.print_psycopg_err(error)
       return []
 
-  def query_object(self,sql):
+  def query_object(self,sql, *args, **kwargs):
     wrapped_sql = self.query_wrap_object(sql)
+    import pdb;pdb.set_trace()
     with self.pool.connection() as conn:
       with conn.cursor() as cur:
-        cur.execute(wrapped_sql)
+        cur.execute(wrapped_sql,args)
         json = cur.fetchone()
       
         return json[0]
@@ -82,6 +83,7 @@ class Db:
 
     except Exception as error:
       self.print_psycopg_err(error)
+      return None
 
 
   def query_commit(self,sql,*args):

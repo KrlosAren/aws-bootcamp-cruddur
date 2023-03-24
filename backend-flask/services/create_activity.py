@@ -46,24 +46,31 @@ class CreateActivity:
       }   
     else:
       expires_at = (now + ttl_offset).isoformat()
-      create_activity(handle_user=user_handle,message=message,expires_at=expires_at)
-      model['data'] = {
-        'uuid': uuid.uuid4(),
-        'display_name': 'Andrew Brown',
-        'handle':  user_handle,
-        'message': message,
-        'created_at': now.isoformat(),
-        'expires_at': (now + ttl_offset).isoformat()
-      }
+      object_json = CreateActivity.create_activity(handle_user=user_handle,message=message,expires_at=expires_at)
+      model['data'] = object_json
+      import pdb;pdb.set_trace()
     return model
 
-def create_activity(handle_user,message, expires_at):
-  sql = f"""
-    INSERT INTO public.activities (user_uuid,message,expires_at) 
-    VALUES (
-      (SELECT uuid FROM public.users WHERE users.handle = %(handle_user)s LIMIT 1) ,%(message)s,%(expires_at)s) RETURNING uuid
-  """
+  @classmethod
+  def create_activity(cls,handle_user,message, expires_at):
+    sql = f"""
+      INSERT INTO public.activities (user_uuid,message,expires_at) 
+      VALUES (
+        (SELECT uuid FROM public.users WHERE users.handle = %(handle_user)s LIMIT 1) ,%(message)s,%(expires_at)s) RETURNING uuid
+    """
+    uuid = db.query_commit_return_id(sql=sql,handle_user=handle_user,message=message,expires_at=expires_at)
+    import pdb;pdb.set_trace()
+    return CreateActivity.query_object_activity(uuid)
 
-  uuid = db.query_commit_return_id(sql=sql,handle_user=handle_user,message=message,expires_at=expires_at)
+  @classmethod
+  def query_object_activity(cls,uuid):
 
+    sql = f"""
+      SELECT * FROM public.activities 
+      where uuid = %(uuid)s
+    """
 
+    object = db.query_object(sql,{
+      'uuid': uuid
+    })
+    import pdb;pdb.set_trace()
