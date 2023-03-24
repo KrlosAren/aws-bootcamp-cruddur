@@ -55,12 +55,10 @@ class Db:
 
   def query_object(self,sql, *args, **kwargs):
     wrapped_sql = self.query_wrap_object(sql)
-    import pdb;pdb.set_trace()
     with self.pool.connection() as conn:
       with conn.cursor() as cur:
-        cur.execute(wrapped_sql,args)
+        cur.execute(wrapped_sql,kwargs)
         json = cur.fetchone()
-      
         return json[0]
 
   def query_commit_return_id(self, sql,*args,**kwargs):
