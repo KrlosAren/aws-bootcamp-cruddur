@@ -1,11 +1,16 @@
 import uuid
 from datetime import datetime, timedelta, timezone
+from lib.db import db
+
+
 class CreateActivity:
+
   def run(message, user_handle, ttl):
     model = {
       'errors': None,
       'data': None
     }
+
 
     now = datetime.now(timezone.utc).astimezone()
 
@@ -40,12 +45,39 @@ class CreateActivity:
         'message': message
       }   
     else:
-      model['data'] = {
-        'uuid': uuid.uuid4(),
-        'display_name': 'Andrew Brown',
-        'handle':  user_handle,
-        'message': message,
-        'created_at': now.isoformat(),
-        'expires_at': (now + ttl_offset).isoformat()
-      }
+      expires_at = (now + ttl_offset).isoformat()
+      object_json = CreateActivity.create_activity(handle_user=user_handle,message=message,expires_at=expires_at)
+      model['data'] = object_json
     return model
+
+  @classmethod
+  def create_activity(cls,handle_user,message, expires_at):
+    sql = f"""
+      INSERT INTO public.activities (user_uuid,message,expires_at) 
+      VALUES (
+        (SELECT uuid FROM public.users WHERE users.handle = %(handle_user)s LIMIT 1) ,%(message)s,%(expires_at)s) RETURNING uuid
+    """
+    uuid = db.query_commit_return_id(sql=sql,handle_user=handle_user,message=message,expires_at=expires_at)
+    return CreateActivity.query_object_activity(uuid)
+
+  @classmethod
+  def query_object_activity(cls,uuid):
+
+    sql = f"""
+      SELECT
+        activities.uuid,
+        users.display_name,
+        users.handle,
+        activities.message,
+        activities.replies_count,
+        activities.reposts_count,
+        activities.likes_count,
+        activities.reply_to_activity_uuid,
+        activities.expires_at,
+        activities.created_at
+      FROM public.activities
+      LEFT JOIN public.users ON users.uuid = activities.user_uuid
+      where public.activities.uuid  = %(uuid)s
+      ORDER BY activities.created_at DESC
+    """
+    return db.query_object(sql,uuid= uuid)
