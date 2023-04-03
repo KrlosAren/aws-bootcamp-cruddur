@@ -43,7 +43,7 @@ from lib.cognito_jwt_token import CognitoJWTToken
 # import rollbar.contrib.flask
 # from flask import got_request_exception
 
-# LOGGER = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 # LOGGER.setLevel(logging.DEBUG)
 # console_handler = logging.StreamHandler()
 # cw_handler = watchtower.CloudWatchLogHandler(log_group='cruddur')
