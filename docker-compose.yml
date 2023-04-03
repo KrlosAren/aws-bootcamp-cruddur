@@ -47,16 +47,16 @@ services:
       REACT_APP_CLIENT_ID : "${REACT_APP_CLIENT_ID}"
 
 
-  # dynamodb-local:
-  #   user: root
-  #   command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
-  #   image: "amazon/dynamodb-local"
-  #   container_name: dynamodb-local
-  #   ports:
-  #    - "8000:8000"
-  #   volumes:
-  #      -  ./dynamodb:/home/dynamodblocal/data
-  #   working_dir: /home/dynamodblocal
+  dynamodb-local:
+    user: root
+    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
+    image: "amazon/dynamodb-local"
+    container_name: dynamodb-local
+    ports:
+     - "8000:8000"
+    volumes:
+       -  ./dynamodb:/home/dynamodblocal/data
+    working_dir: /home/dynamodblocal
   
   db:
     image: postgres:13-alpine
