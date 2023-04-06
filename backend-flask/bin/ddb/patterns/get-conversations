@@ -21,19 +21,21 @@ message_group_uuid = '197239ab-8975-4e97-8cdc-f2f08f484899'
 # define the query parameters
 query_params = {
   'TableName': table_name,
-  'KeyConditionExpression': 'pk = :pkey',
+  'KeyConditionExpression': 'pk = :pk AND begins_with(sk,:year)',
+  # 'KeyConditionExpression': 'pk = :pk AND sk BETWEEN :start_date and :end_date',
   'ScanIndexForward': False,
   'Limit': 20,
   'ExpressionAttributeValues': {
-    ':pkey': {'S': f"MSG#{message_group_uuid}"}
+    ':year': { 'S' : '2023' },
+    # ':start_date': {'S': "2023-04-06T00:00:00.000000+00:00"},
+    # ':end_date': {'S': "2023-04-06T00:00:00.000000+00:00"} ,
+    ':pk': {'S': f"MSG#{message_group_uuid}"},
   },
   'ReturnConsumedCapacity': 'TOTAL'
 }
 
 # query the table
 response = ddb.query(**query_params)
-
-
 
 # print the items returned by the query
 print(json.dumps(response, sort_keys=True, indent=2))
@@ -44,7 +46,9 @@ print(json.dumps(response['ConsumedCapacity'], sort_keys=True, indent=2))
 items = response['Items']
 
 print(f'ITEMS => {len(items)}')
-for item in items:
+
+reversed_array = items[::-1]
+for item in reversed_array:
   sender_handle = item['user_handle']['S']
   message       = item['message']['S']
   timestamp     = item['sk']['S']
