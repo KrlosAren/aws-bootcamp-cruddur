@@ -239,6 +239,7 @@ for i in range(len(lines)):
     
     create_at = (now + timedelta(minutes=1)).isoformat()
     users = get_user_uuids()
+    print(users)
 
     create_message(
         client=ddb,
