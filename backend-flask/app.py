@@ -18,6 +18,7 @@ from services.create_message import *
 from services.show_activity import *
 
 from lib.cognito_jwt_token import CognitoJWTToken
+from lib.ddb import Ddb
 
 # ## Honeycomb
 # from opentelemetry import trace
@@ -128,7 +129,9 @@ logging.getLogger('flask_cors').level = logging.DEBUG
 
 @app.route("/api/message_groups", methods=['GET'])
 def data_message_groups():
-  user_handle  = 'andrewbrown'
+
+  user_handle  = 'krlosaren'
+
   model = MessageGroups.run(user_handle=user_handle)
   if model['errors'] is not None:
     return model['errors'], 422
