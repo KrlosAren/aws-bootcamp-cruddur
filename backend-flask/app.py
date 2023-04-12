@@ -16,10 +16,10 @@ from services.message_groups import *
 from services.messages import *
 from services.create_message import *
 from services.show_activity import *
+import logging
 
 from lib.cognito_jwt_token import CognitoJWTToken
 from lib.ddb import Ddb
-
 # ## Honeycomb
 # from opentelemetry import trace
 # from opentelemetry.instrumentation.flask import FlaskInstrumentor
@@ -125,18 +125,19 @@ cors = CORS(
 #   LOGGER.error('%s %s %s %s %s %s',timestamp,request.remote_addr,request.method, request.scheme, request.full_path, response.status)
 #   return response
 
-logging.getLogger('flask_cors').level = logging.DEBUG
 
 @app.route("/api/message_groups", methods=['GET'])
 def data_message_groups():
 
-  user_handle  = 'krlosaren'
-
-  model = MessageGroups.run(user_handle=user_handle)
-  if model['errors'] is not None:
-    return model['errors'], 422
-  else:
+  try:
+    print(f'=>> {request.headers}')
+    access_token = cognito_jwt_token.extract_access_token(request.headers)
+    claims =  cognito_jwt_token.verify(token=access_token)
+    model = MessageGroups.run(cognito_user_id=claims['sub'])
     return model['data'], 200
+  except Exception as error:
+    logger.info(error)
+    return {},401
 
 @app.route("/api/messages/@<string:handle>", methods=['GET'])
 def data_messages(handle):

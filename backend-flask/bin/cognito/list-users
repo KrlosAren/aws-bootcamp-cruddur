@@ -1,19 +1,28 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-import sys
 import boto3
+import os
 import json
 
-
-user_pool_id = os.getenv('AWS_COGNITO_USER_POOL_ID')
-
+userpool_id = os.getenv("AWS_COGNITO_USER_POOL_ID")
 client = boto3.client('cognito-idp')
-
-
 params = {
-    'UserPoolId': user_pool_id,
-    'AttributesToGet': [
-        'preferred_username',
-        
-    ]
+  'UserPoolId': userpool_id,
+  'AttributesToGet': [
+      'preferred_username',
+      'sub'
+  ]
 }
+response = client.list_users(**params)
+users = response['Users']
+
+print(json.dumps(users, sort_keys=True, indent=2, default=str))
+
+dict_users = {}
+for user in users:
+  attrs = user['Attributes']
+  sub    = next((a for a in attrs if a["Name"] == 'sub'), None)
+  handle = next((a for a in attrs if a["Name"] == 'preferred_username'), None)
+  dict_users[handle['Value']] = sub['Value']
+
+print(json.dumps(dict_users, sort_keys=True, indent=2, default=str))

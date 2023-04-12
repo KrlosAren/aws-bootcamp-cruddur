@@ -41,6 +41,7 @@ class Ddb:
     print(client)
 
     # query the table
+    import pdb;pdb.set_trace()
     response = client.query(**query_params)
     items = response['Items']
     

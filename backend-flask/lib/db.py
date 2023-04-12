@@ -84,13 +84,22 @@ class Db:
       return None
 
 
-  def query_commit(self,sql,*args):
+  def query_commit(self,sql,*args, **kwargs):
+    pattern = r"\bRETURNING\b"
+    is_returning_id = re.search(pattern, sql)
+
     try:
       with self.pool.connection() as conn:
-        with conn.cursor() as cur:
-          conn.commit(sql)
-    except Exception as error:
-      self.print_psycopg_err(error)
+        cur =  conn.cursor()
+        cur.execute(sql,kwargs)
+        if is_returning_id:
+          returning_id = cur.fetchone()[0]
+        conn.commit() 
+        if is_returning_id:
+          return returning_id
+    except Exception as err:
+      self.print_sql_err(err)
+  # when we want to return a json object
 
 
 db = Db()

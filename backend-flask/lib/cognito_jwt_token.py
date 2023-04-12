@@ -31,6 +31,7 @@ class CognitoJWTToken:
     def extract_access_token(cls,request_headers):
         access_token = None
         auth_header = request_headers.get('Authorization')
+        print(f' =>>>>>>>>>>>>>>>{auth_header}')
         if auth_header and " " in auth_header:
             _, access_token = auth_header.split()
         return access_token
